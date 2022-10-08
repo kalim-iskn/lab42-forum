@@ -1,0 +1,54 @@
+version: '3'
+
+services:
+  php_fpm:
+    container_name: lab42_forum_php
+    build: .
+    user: www-data
+    env_file:
+      - .env
+    expose:
+      - 9000
+    ports:
+      - "29:20"
+    depends_on:
+      - database
+    volumes:
+      - .:/opt/app
+      - /var/log/lab42_forum/php:/var/log/app
+    networks:
+      - lab42_forum_network
+
+  database:
+    container_name: lab42_forum_db
+    image: postgres:15rc1-alpine
+    env_file:
+      - .env
+    environment:
+      - "POSTGRES_DB=${DB_DATABASE}"
+      - "POSTGRES_USER=${DB_USERNAME}"
+      - "POSTGRES_PASSWORD=${DB_PASSWORD}"
+    volumes:
+      - /var/data/lab42_forum/postgres/:/var/lib/postgresql/data
+    ports:
+      - 5445:5432
+    networks:
+      - lab42_forum_network
+
+  nginx:
+    container_name: lab42_forum_nginx
+    image: nginx:1.23.1-alpine
+    ports:
+      - 200:80
+    volumes:
+      - ./:/opt/app
+      - /var/log/lab42_forum/nginx/:/var/log/nginx/
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - lab42_forum_network
+    depends_on:
+      - php_fpm
+
+networks:
+  lab42_forum_network:
+    driver: bridge
