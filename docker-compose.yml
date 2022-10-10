@@ -5,8 +5,6 @@ services:
     container_name: lab42_forum_php
     build: .
     user: www-data
-    env_file:
-      - .env
     expose:
       - 9000
     ports:
@@ -22,8 +20,6 @@ services:
   database:
     container_name: lab42_forum_db
     image: postgres:15rc1-alpine
-    env_file:
-      - .env
     environment:
       - "POSTGRES_DB=${DB_DATABASE}"
       - "POSTGRES_USER=${DB_USERNAME}"
