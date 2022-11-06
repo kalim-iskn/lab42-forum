@@ -2,8 +2,8 @@
 
 namespace App\Exceptions;
 
+use HttpException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Throwable;
 
 class Handler extends ExceptionHandler
 {
@@ -43,8 +43,12 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
-        $this->reportable(function (Throwable $e) {
-            //
+        $this->renderable(function (FlushSessionAlertException $e) {
+            return back()->with(["errorAlert" => $e->getAlertMessage()]);
+        });
+
+        $this->renderable(function (HttpException $e) {
+            abort($e->getCode());
         });
     }
 }

@@ -20,9 +20,46 @@ Route::get('/', function () {
 
 Auth::routes();
 
+Route::get("", [\App\Http\Controllers\Forum\SectionController::class, 'index'])
+    ->name("sections-list");
+
+Route::controller(\App\Http\Controllers\Forum\ThreadController::class)
+    ->group(function () {
+
+        Route::prefix("section/{sectionId}/")
+            ->where(['sectionId' => '[0-9]+'])
+            ->group(function () {
+
+                Route::get("threads", "index")
+                    ->name("threads-list");
+
+                Route::middleware('auth')
+                    ->group(function () {
+                        Route::get("create", "create")
+                            ->name("create-thread");
+
+                        Route::post("store", "store")
+                            ->name("store-thread");
+                    });
+
+            });
+
+        Route::get("thread/{id}", 'show')
+            ->where(['id' => '[0-9]+'])
+            ->name("show-thread");
+
+        Route::post("thread/messages/store", 'storeMessage')
+            ->middleware("auth")
+            ->name("store-message");
+
+        Route::get("threads/messages/my", 'userMessages')
+            ->middleware("auth")
+            ->name("user-messages-list");
+    });
+
 Route::middleware('auth')
     ->group(function () {
-        Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])
+        Route::get('home', [App\Http\Controllers\HomeController::class, 'index'])
             ->name('home');
 
         Route::controller(\App\Http\Controllers\User\EditProfileController::class)
@@ -33,5 +70,15 @@ Route::middleware('auth')
 
                 Route::post('', 'update')
                     ->name('update-profile');
+            });
+
+        Route::controller(\App\Http\Controllers\User\EditPasswordController::class)
+            ->prefix('password/edit')
+            ->group(function () {
+                Route::get('', 'edit')
+                    ->name('edit-password');
+
+                Route::post('', 'update')
+                    ->name('update-password');
             });
     });

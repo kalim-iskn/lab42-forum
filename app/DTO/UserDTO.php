@@ -11,4 +11,13 @@ class UserDTO
     public string $name;
 
     public ?string $avatar = null;
+
+    public function getAvatarUrl(): string
+    {
+        if ($this->avatar === null) {
+            return "";
+        }
+
+        return asset("storage/" . $this->avatar);
+    }
 }

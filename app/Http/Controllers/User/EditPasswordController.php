@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Exceptions\FileNotLoadedException;
+use App\Exceptions\User\OldPasswordInvalidException;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\User\EditProfileRequest;
+use App\Http\Requests\User\EditPasswordRequest;
 use App\Services\Contracts\UserService;
 use Auth;
 
-class EditProfileController extends Controller
+class EditPasswordController extends Controller
 {
     protected UserService $userService;
 
@@ -20,15 +20,15 @@ class EditProfileController extends Controller
     public function edit()
     {
         $user = $this->userService->getById(Auth::id());
-        return view('user.edit', ["user" => $user]);
+        return view('user.edit-password', ["user" => $user]);
     }
 
     /**
-     * @throws FileNotLoadedException
+     * @throws OldPasswordInvalidException
      */
-    public function update(EditProfileRequest $request)
+    public function update(EditPasswordRequest $request)
     {
-        $this->userService->update(Auth::id(), $request);
+        $this->userService->updatePassword(Auth::id(), $request);
         return back()->with("success", true);
     }
 }

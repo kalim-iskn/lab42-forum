@@ -3,11 +3,14 @@
 namespace App\Services;
 
 use App\DTO\UserDTO;
-use App\Exceptions\UserNotFoundException;
-use App\Http\Requests\EditProfileRequest;
+use App\Exceptions\User\OldPasswordInvalidException;
+use App\Exceptions\User\UserNotFoundException;
+use App\Http\Requests\User\EditPasswordRequest;
+use App\Http\Requests\User\EditProfileRequest;
 use App\Models\User;
 use App\Services\Contracts\FileService;
 use App\Services\Contracts\UserService;
+use Hash;
 
 class EloquentUserService implements UserService
 {
@@ -43,8 +46,20 @@ class EloquentUserService implements UserService
         }
     }
 
+    public function updatePassword(int $id, EditPasswordRequest $request): void
+    {
+        $user = $this->find($id);
+
+        if (!Hash::check($request->oldPassword, $user->password)) {
+            throw new OldPasswordInvalidException();
+        }
+
+        $user->password = Hash::make($request->newPassword);
+        $user->save();
+    }
+
     /**
-     * @throws UserNotFoundException
+     * @throws \App\Exceptions\User\UserNotFoundException
      */
     private function find(int $id): User
     {

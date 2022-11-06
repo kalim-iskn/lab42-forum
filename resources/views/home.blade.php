@@ -8,13 +8,27 @@
                 <div class="card-header">{{ __('Dashboard') }}</div>
 
                 <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
+                    @if($user->avatar)
+                        <div class="w-25">
+                            <img src="{{ $user->getAvatarUrl() }}" style="max-width: 100%">
                         </div>
                     @endif
 
-                    {{ __('You are logged in!') }}
+                    <ul>
+                        <li>
+                            Name: {{ $user->name }}
+                        </li>
+                        <li>
+                            Email: {{ $user->email }}
+                        </li>
+                    </ul>
+
+                    <p>
+                        <a href="{{ route('edit-profile') }}">Edit Profile</a>
+                    </p>
+                    <p>
+                        <a href="{{ route('edit-password') }}">Edit Password</a>
+                    </p>
                 </div>
             </div>
         </div>
