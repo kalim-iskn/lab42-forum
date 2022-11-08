@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Section;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,11 +14,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
+        if (Section::count() == 0) {
+            Section::factory()->create([
+                "name" => "Компьютерные игры"
+            ]);
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+            Section::factory()->create([
+                "name" => "Психология"
+            ]);
+
+            Section::factory()->create([
+                "name" => "Политика"
+            ]);
+        }
     }
 }
